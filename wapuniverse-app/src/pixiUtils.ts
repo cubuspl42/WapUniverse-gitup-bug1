@@ -61,6 +61,7 @@ export function graphicsRectangle(params: GraphicsRectangleParams): PIXI.Display
   const graphics = new PIXI.Graphics();
 
   function redraw() {
+    console.log("graphicsRectangle/redraw");
     graphics.clear();
     graphics.lineStyle(
       params.strokeWidth instanceof Cell ?

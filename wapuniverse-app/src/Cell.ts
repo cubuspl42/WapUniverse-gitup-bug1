@@ -80,8 +80,11 @@ class MappedCell<T, R> extends Cell<R> {
 
   protected onFirstListenerSubscribed(): void {
     this.unsubscribe = this.source.listen((value => {
-      this.value = this.f(value);
-      this.emit(this.value);
+      const newValue = this.f(value);
+      if (newValue !== this.value) {
+        this.emit(newValue);
+      }
+      this.value = newValue;
     }));
   }
 
@@ -112,15 +115,19 @@ class FlatMappedCell<T, R> extends Cell<R> {
 
   protected onFirstListenerSubscribed(): void {
     const listenToNested = (nested: Cell<R>) => {
-      this.unsubscribeNested = nested.listen((value) => this.emit(value));
+      this.unsubscribeNested = nested.listen((value) => {
+        this.emit(value);
+      });
       this.nested = nested;
     };
 
     this.unsubscribe = this.source.listen((sourceValue: T) => {
       this.unsubscribeNested!();
       const nested = this.f(sourceValue);
-      this.emit(nested.sample());
-      listenToNested(nested);
+      if (nested !== this.nested) {
+        this.emit(nested.sample());
+        listenToNested(nested);
+      }
     });
 
     listenToNested(this.nested);
@@ -160,13 +167,19 @@ class LiftedCell<T1, T2, R> extends Cell<R> {
 
   protected onFirstListenerSubscribed(): void {
     this.unsubscribe1 = this.source1.listen((value1 => {
-      this.value = this.f(value1, this.source2.sample());
-      this.emit(this.value);
+      const newValue = this.f(value1, this.source2.sample());
+      if (newValue !== this.value) {
+        this.emit(this.value);
+        this.value = newValue;
+      }
     }));
 
     this.unsubscribe2 = this.source2.listen((value2 => {
-      this.value = this.f(this.source1.sample(), value2);
-      this.emit(this.value);
+      const newValue = this.f(this.source1.sample(), value2);
+      if (newValue !== this.value) {
+        this.value = newValue;
+        this.emit(newValue);
+      }
     }));
   }
 
@@ -192,8 +205,10 @@ export class CellSink<T> extends Cell<T> {
   }
 
   send(value: T) {
-    this.value = value;
-    this.emit(value);
+    if (value !== this.value) {
+      this.value = value;
+      this.emit(value);
+    }
   }
 
   protected onFirstListenerSubscribed(): void {
