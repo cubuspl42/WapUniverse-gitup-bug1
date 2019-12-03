@@ -43,13 +43,13 @@ it('Cell.map', () => {
 
   source.send(3);
 
-  expect(inputs).to.be.deep.equal([1, 2, 3, 3]);
+  expect(inputs).to.be.deep.equal([1, 2, 3]);
   expect(outputs).to.be.deep.equal(["s2", "s3"]);
   expect(mapped.sample()).to.be.equal("s3");
 
   unsubscribe();
 
-  expect(inputs).to.be.deep.equal([1, 2, 3, 3]);
+  expect(inputs).to.be.deep.equal([1, 2, 3]);
   expect(outputs).to.be.deep.equal(["s2", "s3"]);
   expect(mapped.sample()).to.be.equal("s3");
   expect(source.refCount).to.be.equal(0);

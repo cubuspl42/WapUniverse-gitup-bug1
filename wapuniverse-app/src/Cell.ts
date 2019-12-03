@@ -169,7 +169,7 @@ class LiftedCell<T1, T2, R> extends Cell<R> {
     this.unsubscribe1 = this.source1.listen((value1 => {
       const newValue = this.f(value1, this.source2.sample());
       if (newValue !== this.value) {
-        this.emit(this.value);
+        this.emit(newValue);
         this.value = newValue;
       }
     }));
